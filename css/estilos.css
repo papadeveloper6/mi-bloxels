@@ -91,6 +91,11 @@ h2 { margin: 28px 0 12px; }
 .muestra { width: 36px; height: 36px; border-radius: 6px; flex: none; box-shadow: inset 3px 3px 0 #fff6, inset -3px -3px 0 #0005; }
 .editor-foto { width: 100%; border-radius: var(--radio); opacity: .9; }
 
+/* Aviso para instalar la app */
+.instalar { margin-top: 16px; background: var(--panel); border: 2px solid #43b04788; border-radius: var(--radio); padding: 14px 16px; display: flex; gap: 14px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.instalar p { margin: 6px 0 0; color: var(--suave); }
+.instalar small { display: block; margin-top: 6px; }
+
 /* Pistas distintas para ratón y para dedo */
 .solo-tactil { display: none; }
 body.tactil .solo-tactil { display: inline; }

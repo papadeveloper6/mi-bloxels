@@ -94,13 +94,71 @@ const App = (() => {
     };
   }
 
-  function exportar() {
-    const blob = new Blob([Almacen.exportar()], { type: 'application/json' });
+  async function exportar() {
+    const nombre = `mi-bloxels-copia-${new Date().toISOString().slice(0, 10)}.json`;
+    const archivo = new File([Almacen.exportar()], nombre, { type: 'application/json' });
+    // En iPad y móvil se usa "Compartir": deja guardarlo en Archivos, enviarlo por AirDrop, etc.
+    if (document.body.classList.contains('tactil') && navigator.canShare && navigator.canShare({ files: [archivo] })) {
+      try {
+        await navigator.share({ files: [archivo], title: 'Copia de Mi Bloxels' });
+        return;
+      } catch (e) {
+        if (e.name === 'AbortError') return;
+      }
+    }
     const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `mi-bloxels-copia-${new Date().toISOString().slice(0, 10)}.json`;
+    a.href = URL.createObjectURL(archivo);
+    a.download = nombre;
     a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  }
+
+  function estaInstalada() {
+    return window.matchMedia('(display-mode: standalone)').matches
+      || window.matchMedia('(display-mode: fullscreen)').matches
+      || navigator.standalone === true;
+  }
+
+  // Service worker (uso sin internet) y aviso para instalar la app
+  function prepararApp() {
+    if (location.protocol === 'file:') return;  // abierta como archivo: no hay instalación
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(e => console.warn('Sin modo sin conexión:', e));
+    }
+    // Pide al navegador que no borre los niveles si se queda sin espacio
+    if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
+
+    if (estaInstalada()) return;
+    try { if (localStorage.getItem('mi-bloxels.no-instalar')) return; } catch (e) { /* sin almacenamiento */ }
+    const caja = $('#instalar'), texto = $('#instalar-texto'), boton = $('#instalar-boton');
+    const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    if (ios) {
+      texto.innerHTML = 'Pulsa el botón <b>Compartir</b> de Safari (el cuadrado con la flecha ↑) y elige <b>«Añadir a pantalla de inicio»</b>. '
+        + 'Se abrirá a pantalla completa y funcionará sin internet.<br>'
+        + '<small>Ojo: la app instalada guarda sus niveles aparte de Safari. Si ya tienes niveles aquí, pásalos con «Copias de seguridad» (abajo del todo).</small>';
+      caja.classList.remove('oculto');
+    }
+    // Android y ordenadores con Chrome/Edge: el navegador ofrece su propio botón de instalar
+    let peticion = null;
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      peticion = e;
+      texto.textContent = 'Tendrás un icono en la pantalla de inicio, se abrirá a pantalla completa y funcionará sin internet.';
+      boton.classList.remove('oculto');
+      caja.classList.remove('oculto');
+    });
+    boton.onclick = async () => {
+      if (!peticion) return;
+      peticion.prompt();
+      await peticion.userChoice.catch(() => {});
+      peticion = null;
+      caja.classList.add('oculto');
+    };
+    window.addEventListener('appinstalled', () => caja.classList.add('oculto'));
+    $('#instalar-cerrar').onclick = () => {
+      caja.classList.add('oculto');
+      try { localStorage.setItem('mi-bloxels.no-instalar', '1'); } catch (e) { /* sin almacenamiento */ }
+    };
   }
 
   function arrancar() {
@@ -148,7 +206,7 @@ const App = (() => {
     const raiz = document.documentElement;
     const pedir = raiz.requestFullscreen || raiz.webkitRequestFullscreen;
     const salirPC = document.exitFullscreen || document.webkitExitFullscreen;
-    if (!pedir || !(document.fullscreenEnabled || document.webkitFullscreenEnabled)) {
+    if (!pedir || !(document.fullscreenEnabled || document.webkitFullscreenEnabled) || estaInstalada()) {
       $('#btn-pantalla-completa').classList.add('oculto');
     }
     $('#btn-pantalla-completa').onclick = () => {
@@ -157,6 +215,7 @@ const App = (() => {
         else Promise.resolve(pedir.call(raiz)).catch(() => {});
       } catch (e) { /* no disponible */ }
     };
+    prepararApp();
     mostrar('inicio');
   }
 

@@ -4,7 +4,17 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Mi Bloxels</title>
-  <link rel="stylesheet" href="css/estilos.css?v=6">
+  <meta name="description" content="Crea videojuegos con las fotos de tu tablero de Bloxels">
+  <meta name="theme-color" content="#151726">
+  <!-- App instalable: iPad/iPhone (Añadir a pantalla de inicio) y Android -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" href="iconos/icono-192.png">
+  <link rel="apple-touch-icon" href="iconos/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Mi Bloxels">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="css/estilos.css?v=7">
 </head>
 <body>
   <header class="barra">
@@ -19,6 +29,16 @@
       <button class="btn grande" id="btn-nuevo-vacio">➕ Nivel vacío</button>
       <button class="btn grande rosa" id="btn-nuevo-personaje">🦸 Nuevo personaje</button>
       <button class="btn grande morado" id="btn-nuevo-juego">🌍 Nuevo juego</button>
+    </div>
+    <div id="instalar" class="instalar oculto">
+      <div>
+        <b>📲 Instálalo como una app</b>
+        <p id="instalar-texto"></p>
+      </div>
+      <div class="botones">
+        <button class="btn verde oculto" id="instalar-boton">📲 Instalar</button>
+        <button class="btn" id="instalar-cerrar">Ahora no</button>
+      </div>
     </div>
     <h2>🎮 Mis juegos</h2>
     <div id="lista-juegos" class="tarjetas"></div>
@@ -193,13 +213,13 @@
     </div>
   </div>
 
-  <script src="js/datos.js?v=6"></script>
-  <script src="js/dialogo.js?v=6"></script>
-  <script src="js/foto.js?v=6"></script>
-  <script src="js/editor.js?v=6"></script>
-  <script src="js/personaje.js?v=6"></script>
-  <script src="js/mundo.js?v=6"></script>
-  <script src="js/juego.js?v=6"></script>
-  <script src="js/app.js?v=6"></script>
+  <script src="js/datos.js?v=7"></script>
+  <script src="js/dialogo.js?v=7"></script>
+  <script src="js/foto.js?v=7"></script>
+  <script src="js/editor.js?v=7"></script>
+  <script src="js/personaje.js?v=7"></script>
+  <script src="js/mundo.js?v=7"></script>
+  <script src="js/juego.js?v=7"></script>
+  <script src="js/app.js?v=7"></script>
 </body>
 </html>

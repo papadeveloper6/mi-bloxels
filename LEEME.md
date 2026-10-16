@@ -8,6 +8,17 @@ No hay mapas de otros jugadores: solo están los niveles que hagas tú, y se gua
 - **En internet:** https://papadeveloper6.github.io/mi-bloxels/
 - **En el ordenador, sin internet:** descarga esta carpeta y haz doble clic en `index.html` (mejor con Chrome o Edge). No hace falta instalar nada.
 
+### Instalarla como app (iPad, iPhone y Android)
+
+Así tiene su propio icono, se abre a pantalla completa (sin la barra del navegador) y **funciona sin internet** una vez abierta la primera vez.
+
+- **iPad / iPhone:** abre la dirección en **Safari** → botón **Compartir** (el cuadrado con la flecha ↑) → **«Añadir a pantalla de inicio»**.
+- **Android:** abre la dirección en **Chrome** → pulsa **📲 Instalar** en la pantalla de inicio de la app (o menú ⋮ → **«Instalar aplicación»**).
+
+> ⚠️ **En iPad y iPhone, la app instalada guarda sus niveles aparte de Safari.** Si ya tenías niveles en Safari: en Safari usa **Copias de seguridad → 💾 Guardar copia** (guárdala en Archivos) y, dentro de la app instalada, **📂 Restaurar copia**.
+
+Las actualizaciones llegan solas: cada vez que se abre con internet, carga la última versión.
+
 ### Modo "solo esto" en Windows (recomendado para niños)
 
 Para que solo se vea Mi Bloxels a pantalla completa, sin barra del navegador ni pestañas, crea un acceso directo en el escritorio con este destino:
