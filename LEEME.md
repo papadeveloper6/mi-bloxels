@@ -45,7 +45,9 @@ Se sale con `Alt+F4`.
 | 🟧 Naranja | Bloque explosivo 💥: si lo golpeas con la cabeza o caes encima, explota. Hace explotar a los naranjas de al lado y elimina a los enemigos cercanos |
 | 🟥 Rojo | Peligro: pinchos que quitan una vida |
 
-**Controles:** ← → para moverse · Espacio o ↑ para saltar · P para pausar · Esc para salir.
+**Controles con teclado:** ← → para moverse · Espacio o ↑ para saltar · P para pausar · Esc para salir.
+
+**Controles en tablet o móvil:** botones ◀ ▶ abajo a la izquierda (se puede deslizar el dedo de uno a otro) y botón de salto ⬆ abajo a la derecha. Arriba están ⏸ pausa, 🔊 sonido y ✖ salir. Si la app pasa a segundo plano, el juego se pausa solo.
 
 ## Dónde se guarda
 

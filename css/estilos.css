@@ -11,7 +11,9 @@
   --radio: 14px;
 }
 
-* { box-sizing: border-box; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+/* manipulation: evita el zoom con doble toque en tablets y móviles */
+html { touch-action: manipulation; -webkit-text-size-adjust: 100%; }
 html, body { margin: 0; background: var(--fondo); color: var(--texto); font-family: "Segoe UI", "Trebuchet MS", system-ui, sans-serif; }
 body { min-height: 100vh; }
 .oculto { display: none !important; }
@@ -128,3 +130,28 @@ body[data-pantalla="juego"] .barra { display: none; }
 .mensaje h2 { font-size: 56px; margin: 0; }
 .mensaje p { font-size: 24px; }
 .controles-ayuda { color: var(--suave); font-size: 15px; }
+
+/* Controles táctiles: solo aparecen en tablets y móviles (clase .tactil en <body>) */
+body[data-pantalla="juego"] { overscroll-behavior: none; }
+#pantalla-juego { touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.controles-tactiles { display: none; }
+body.tactil .controles-ayuda { display: none; }
+body.tactil .controles-tactiles { display: block; }
+.tactil-cruceta, .tactil-salto {
+  position: fixed; z-index: 5; bottom: calc(14px + env(safe-area-inset-bottom));
+  touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+  color: #fff; font-size: 40px; font-weight: 900; text-shadow: 0 2px 0 #0008;
+}
+.tactil-cruceta { left: calc(14px + env(safe-area-inset-left)); display: flex; gap: 10px; }
+.tactil-cruceta span, .tactil-salto {
+  display: grid; place-items: center; width: 96px; height: 96px; border-radius: 24px;
+  background: rgba(255,255,255,.18); border: 3px solid rgba(255,255,255,.45); backdrop-filter: blur(2px);
+}
+.tactil-salto { right: calc(14px + env(safe-area-inset-right)); width: 116px; height: 116px; border-radius: 50%; background: rgba(67,176,71,.45); }
+.tactil-cruceta.izq span:first-child, .tactil-cruceta.der span:last-child, .tactil-salto.pulsado {
+  background: rgba(253,216,53,.6); transform: scale(.94);
+}
+@media (max-height: 500px) {
+  .tactil-cruceta span { width: 76px; height: 76px; font-size: 32px; }
+  .tactil-salto { width: 92px; height: 92px; font-size: 32px; }
+}

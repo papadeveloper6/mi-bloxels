@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Mi Bloxels</title>
   <link rel="stylesheet" href="css/estilos.css">
 </head>
@@ -159,13 +159,14 @@
       <span id="hud-vidas"></span>
       <span id="hud-monedas"></span>
       <span id="hud-poder"></span>
+      <button class="btn" id="juego-pausar" tabindex="-1" title="Pausa">⏸</button>
       <button class="btn" id="juego-sonido" tabindex="-1">🔊</button>
       <button class="btn" id="juego-salir" tabindex="-1">✖ Salir</button>
     </div>
     <div class="juego-caja">
       <canvas id="juego-lienzo"></canvas>
       <div id="juego-historia" class="bocadillo oculto"></div>
-      <div id="juego-pausa" class="mensaje oculto"><h2>⏸ Pausa</h2><p>Pulsa P para seguir</p></div>
+      <div id="juego-pausa" class="mensaje oculto"><h2>⏸ Pausa</h2><p>Toca la pantalla o pulsa P para seguir</p></div>
       <div id="juego-mensaje" class="mensaje oculto">
         <h2 id="juego-mensaje-titulo"></h2>
         <p id="juego-mensaje-texto"></p>
@@ -176,6 +177,10 @@
       </div>
     </div>
     <div class="controles-ayuda">← → moverse · Espacio / ↑ saltar · P pausa · Esc salir</div>
+    <div class="controles-tactiles">
+      <div id="tactil-cruceta" class="tactil-cruceta"><span>◀</span><span>▶</span></div>
+      <div id="tactil-salto" class="tactil-salto">⬆</div>
+    </div>
   </section>
 
   <script src="js/datos.js"></script>

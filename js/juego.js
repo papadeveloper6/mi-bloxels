@@ -36,13 +36,84 @@ const Juego = (() => {
     window.addEventListener('keyup', e => { teclas[e.code] = false; });
     window.addEventListener('blur', () => { teclas = {}; });
     window.addEventListener('resize', ajustar);
+    window.addEventListener('keydown', desbloquearAudio);
+    // Si la app pasa a segundo plano (botón de inicio del iPad, llamada...), se pausa
+    document.addEventListener('visibilitychange', () => {
+      teclas = {};
+      if (document.hidden && activo && estado === 'jugando' && !pausa) alternarPausa();
+    });
     $('#juego-salir').onclick = salir;
     $('#juego-volver').onclick = salir;
     $('#juego-otra').onclick = empezar;
+    $('#juego-pausar').onclick = () => { if (estado === 'jugando') alternarPausa(); };
+    $('#juego-pausa').onclick = () => { if (pausa) alternarPausa(); };
     $('#juego-sonido').onclick = () => {
       conSonido = !conSonido;
       $('#juego-sonido').textContent = conSonido ? '🔊' : '🔇';
     };
+    iniciarTactil();
+  }
+
+  // ---------- Controles táctiles ----------
+  function iniciarTactil() {
+    const marcar = () => { document.body.classList.add('tactil'); ajustar(); };
+    if (navigator.maxTouchPoints > 0 || window.matchMedia('(pointer: coarse)').matches) marcar();
+    window.addEventListener('pointerdown', e => { if (e.pointerType === 'touch') marcar(); });
+
+    const capturar = (el, e) => { try { el.setPointerCapture(e.pointerId); } catch (err) { /* puntero simulado */ } };
+
+    // Cruceta: mitad izquierda = ◀, mitad derecha = ▶. Se puede deslizar el dedo de una a otra.
+    const cruceta = $('#tactil-cruceta'), toques = new Map();
+    const lado = e => {
+      const r = cruceta.getBoundingClientRect();
+      return e.clientX < r.left + r.width / 2 ? 'izq' : 'der';
+    };
+    const aplicar = () => {
+      const v = [...toques.values()];
+      teclas.TactilIzq = v.includes('izq');
+      teclas.TactilDer = v.includes('der');
+      cruceta.classList.toggle('izq', teclas.TactilIzq);
+      cruceta.classList.toggle('der', teclas.TactilDer);
+    };
+    cruceta.addEventListener('pointerdown', e => {
+      e.preventDefault();
+      capturar(cruceta, e);
+      desbloquearAudio();
+      toques.set(e.pointerId, lado(e));
+      aplicar();
+    });
+    cruceta.addEventListener('pointermove', e => {
+      if (!toques.has(e.pointerId)) return;
+      toques.set(e.pointerId, lado(e));
+      aplicar();
+    });
+    const soltarCruceta = e => { toques.delete(e.pointerId); aplicar(); };
+    ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(t => cruceta.addEventListener(t, soltarCruceta));
+
+    // Botón de salto
+    const boton = $('#tactil-salto');
+    boton.addEventListener('pointerdown', e => {
+      e.preventDefault();
+      capturar(boton, e);
+      desbloquearAudio();
+      teclas.TactilSalto = true;
+      bufferSalto = 0.15;
+      boton.classList.add('pulsado');
+    });
+    const soltarSalto = () => { teclas.TactilSalto = false; boton.classList.remove('pulsado'); };
+    ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(t => boton.addEventListener(t, soltarSalto));
+
+    // Evita el menú de pulsación larga y la selección de texto en iOS
+    $('#pantalla-juego').addEventListener('contextmenu', e => e.preventDefault());
+  }
+
+  // iOS solo deja sonar el audio si se crea durante un toque o una tecla
+  function desbloquearAudio() {
+    if (!conSonido) return;
+    try {
+      audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+      if (audio.state === 'suspended') audio.resume();
+    } catch (e) { /* sin sonido */ }
   }
 
   function iniciar(definicion, cbSalir) {
@@ -72,7 +143,9 @@ const Juego = (() => {
 
   function ajustar() {
     if (!lienzo || !lienzo.width) return;
-    const maxW = window.innerWidth - 24, maxH = window.innerHeight - 110;
+    // Con pantalla táctil no se muestra la ayuda de teclado, así que hay algo más de alto
+    const reservado = document.body.classList.contains('tactil') ? 72 : 110;
+    const maxW = window.innerWidth - 24, maxH = window.innerHeight - reservado;
     const s = Math.min(maxW / lienzo.width, maxH / lienzo.height);
     lienzo.style.width = Math.floor(lienzo.width * s) + 'px';
     lienzo.style.height = Math.floor(lienzo.height * s) + 'px';
@@ -219,8 +292,9 @@ const Juego = (() => {
 
   function actualizar(dt) {
     const j = jugador;
-    const izq = teclas.ArrowLeft || teclas.KeyA, der = teclas.ArrowRight || teclas.KeyD;
-    const saltoPulsado = teclas.Space || teclas.ArrowUp || teclas.KeyW;
+    const izq = teclas.ArrowLeft || teclas.KeyA || teclas.TactilIzq;
+    const der = teclas.ArrowRight || teclas.KeyD || teclas.TactilDer;
+    const saltoPulsado = teclas.Space || teclas.ArrowUp || teclas.KeyW || teclas.TactilSalto;
     const dir = (der ? 1 : 0) - (izq ? 1 : 0);
     if (dir) j.mira = dir;
     const enAgua = celda(Math.floor(j.x + j.w / 2), Math.floor(j.y + j.h / 2)) === 'B';
