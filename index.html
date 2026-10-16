@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mi Bloxels</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <header class="barra">
+    <h1 class="logo">Mi <span class="l1">B</span><span class="l2">l</span><span class="l3">o</span><span class="l4">x</span><span class="l5">e</span><span class="l6">l</span><span class="l7">s</span></h1>
+    <button class="btn" id="btn-pantalla-completa" title="Pantalla completa">⛶ Pantalla completa</button>
+  </header>
+
+  <!-- INICIO -->
+  <section id="pantalla-inicio" class="pantalla">
+    <div class="acciones">
+      <button class="btn grande verde" id="btn-nuevo-foto">📸 Nivel desde foto</button>
+      <button class="btn grande" id="btn-nuevo-vacio">➕ Nivel vacío</button>
+      <button class="btn grande rosa" id="btn-nuevo-personaje">🦸 Nuevo personaje</button>
+      <button class="btn grande morado" id="btn-nuevo-juego">🌍 Nuevo juego</button>
+    </div>
+    <h2>🎮 Mis juegos</h2>
+    <div id="lista-juegos" class="tarjetas"></div>
+    <h2>🦸 Mis personajes</h2>
+    <div id="lista-personajes" class="tarjetas"></div>
+    <h2>🧱 Mis niveles</h2>
+    <div id="lista-niveles" class="tarjetas"></div>
+    <details class="padres">
+      <summary>Copias de seguridad</summary>
+      <p class="pista">Los niveles se guardan en este navegador. Haz una copia de vez en cuando por si acaso.</p>
+      <div class="botones">
+        <button class="btn" id="btn-exportar">💾 Guardar copia</button>
+        <label class="btn">📂 Restaurar copia<input type="file" id="input-importar" accept=".json,application/json" hidden></label>
+      </div>
+    </details>
+  </section>
+
+  <!-- FOTO -->
+  <section id="pantalla-foto" class="pantalla oculto">
+    <div class="cabecera">
+      <button class="btn" id="foto-volver">⬅ Volver</button>
+      <h2 id="foto-titulo">📸 Nivel desde foto</h2>
+    </div>
+    <div class="foto-fuentes">
+      <label class="btn grande verde">🖼️ Elegir foto<input type="file" id="foto-input" accept="image/*" hidden></label>
+      <button class="btn grande" id="foto-camara">📷 Usar la cámara</button>
+      <span class="pista">…o arrastra o pega (Ctrl+V) una foto aquí</span>
+    </div>
+    <div id="foto-video-caja" class="oculto">
+      <video id="foto-video" autoplay playsinline muted></video>
+      <div class="botones">
+        <button class="btn grande verde" id="foto-disparar">📸 ¡Hacer foto!</button>
+        <button class="btn" id="foto-cerrar-camara">Cancelar</button>
+      </div>
+    </div>
+    <div id="foto-trabajo" class="oculto">
+      <p class="pista">Toca o arrastra los 4 círculos hasta las esquinas de la cuadrícula (donde empiezan los bloques, no el borde del tablero). El <b>1</b> es la esquina de arriba a la izquierda.</p>
+      <div class="foto-columnas">
+        <div class="foto-lienzo-caja"><canvas id="foto-lienzo"></canvas></div>
+        <div class="foto-lateral">
+          <h3>Esto es lo que veo:</h3>
+          <canvas id="foto-preview" width="260" height="260"></canvas>
+          <button class="btn" id="foto-girar">↻ Girar 90°</button>
+          <button class="btn grande verde" id="foto-usar">✅ ¡Usar esta cuadrícula!</button>
+          <p class="pista">Si algún color sale mal, lo podrás arreglar en el siguiente paso.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EDITOR DE NIVEL -->
+  <section id="pantalla-editor" class="pantalla oculto">
+    <div class="cabecera">
+      <button class="btn" id="editor-volver">⬅ Volver</button>
+      <input class="input-nombre" id="editor-nombre" maxlength="40" placeholder="Nombre del nivel">
+      <span id="editor-aviso" class="aviso"></span>
+    </div>
+    <div class="editor-columnas">
+      <div id="editor-rejilla" class="rejilla"></div>
+      <div class="editor-lateral">
+        <div id="editor-paleta" class="paleta"></div>
+        <p class="pista">Clic para pintar · clic derecho para borrar</p>
+        <button class="btn" id="editor-texto">💬 Escribir en bloques blancos</button>
+        <div class="botones">
+          <button class="btn grande verde" id="editor-guardar">💾 Guardar</button>
+          <button class="btn grande amarillo" id="editor-probar">▶ Probar</button>
+        </div>
+        <button class="btn rojo" id="editor-limpiar">🧹 Borrar todo</button>
+        <img id="editor-foto" class="editor-foto oculto" alt="Foto original">
+      </div>
+    </div>
+  </section>
+
+  <!-- EDITOR DE PERSONAJE -->
+  <section id="pantalla-personaje" class="pantalla oculto">
+    <div class="cabecera">
+      <button class="btn" id="pj-volver">⬅ Volver</button>
+      <input class="input-nombre" id="pj-nombre" maxlength="40" placeholder="Nombre del personaje">
+      <span id="pj-aviso" class="aviso"></span>
+    </div>
+    <div class="editor-columnas">
+      <div class="pj-izquierda">
+        <div id="pj-fotogramas" class="fotogramas"></div>
+        <div id="pj-rejilla" class="rejilla"></div>
+        <p class="pista" id="pj-pista"></p>
+      </div>
+      <div class="editor-lateral">
+        <div id="pj-paleta" class="paleta"></div>
+        <p class="pista">Clic para pintar · clic derecho para borrar. Aquí los colores son solo colores.</p>
+        <div class="botones">
+          <button class="btn verde" id="pj-foto">📸 Desde foto</button>
+          <button class="btn" id="pj-copiar">📋 Copiar el «Quieto»</button>
+          <button class="btn rojo" id="pj-limpiar">🧹 Borrar dibujo</button>
+        </div>
+        <canvas id="pj-preview" width="240" height="220"></canvas>
+        <div class="botones">
+          <button class="btn grande verde" id="pj-guardar">💾 Guardar</button>
+          <button class="btn grande amarillo" id="pj-probar">▶ Probar</button>
+        </div>
+        <button class="btn morado" id="pj-elegir">⭐ Usar en mis juegos</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONSTRUCTOR DE JUEGO -->
+  <section id="pantalla-mundo" class="pantalla oculto">
+    <div class="cabecera">
+      <button class="btn" id="mundo-volver">⬅ Volver</button>
+      <input class="input-nombre" id="mundo-nombre" maxlength="40" placeholder="Nombre del juego">
+      <span id="mundo-aviso" class="aviso"></span>
+    </div>
+    <div class="mundo-columnas">
+      <div class="mundo-niveles">
+        <h3>1. Elige un nivel</h3>
+        <div id="mundo-lista"></div>
+      </div>
+      <div class="mundo-centro">
+        <h3>2. Ponlo en el mapa</h3>
+        <div class="mundo-herramientas">
+          <button class="btn" data-herr="poner">🧱 Poner</button>
+          <button class="btn" data-herr="quitar">🗑️ Quitar</button>
+          <button class="btn" data-herr="inicio">⭐ Salida</button>
+        </div>
+        <div id="mundo-mapa" class="mapa"></div>
+        <p class="pista">Los niveles que se tocan quedan conectados: el personaje puede pasar de uno a otro. La ⭐ marca dónde empiezas.</p>
+        <label class="selector">🦸 Personaje: <select id="mundo-personaje"></select></label>
+        <div class="botones">
+          <button class="btn grande verde" id="mundo-guardar">💾 Guardar</button>
+          <button class="btn grande amarillo" id="mundo-jugar">▶ ¡Jugar!</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- JUEGO -->
+  <section id="pantalla-juego" class="pantalla oculto">
+    <div class="hud">
+      <span id="hud-vidas"></span>
+      <span id="hud-monedas"></span>
+      <span id="hud-poder"></span>
+      <button class="btn" id="juego-sonido" tabindex="-1">🔊</button>
+      <button class="btn" id="juego-salir" tabindex="-1">✖ Salir</button>
+    </div>
+    <div class="juego-caja">
+      <canvas id="juego-lienzo"></canvas>
+      <div id="juego-historia" class="bocadillo oculto"></div>
+      <div id="juego-pausa" class="mensaje oculto"><h2>⏸ Pausa</h2><p>Pulsa P para seguir</p></div>
+      <div id="juego-mensaje" class="mensaje oculto">
+        <h2 id="juego-mensaje-titulo"></h2>
+        <p id="juego-mensaje-texto"></p>
+        <div class="botones">
+          <button id="juego-otra" class="btn grande verde" tabindex="-1">🔄 Otra vez</button>
+          <button id="juego-volver" class="btn grande" tabindex="-1">🏠 Salir</button>
+        </div>
+      </div>
+    </div>
+    <div class="controles-ayuda">← → moverse · Espacio / ↑ saltar · P pausa · Esc salir</div>
+  </section>
+
+  <script src="js/datos.js"></script>
+  <script src="js/foto.js"></script>
+  <script src="js/editor.js"></script>
+  <script src="js/personaje.js"></script>
+  <script src="js/mundo.js"></script>
+  <script src="js/juego.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
