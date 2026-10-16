@@ -17,7 +17,7 @@ const Juego = (() => {
   let mapa, W, H, VW, VH, historias, enemigos, particulas, jugador, seguro, tiempoSeguro;
   let monedas, totalMonedas, vidas, estado, tiempo = 0, camX = 0, camY = 0;
   let teclas = {}, bufferSalto = 0, raf = 0, ultimo = 0, acum = 0, historiaTiempo = 0;
-  let audio = null, hudTexto = '', mechas = new Map(), sprite = null;
+  let audio = null, hudTexto = '', mechas = new Map(), sprite = null, medida = '';
 
   // ---------- Interfaz ----------
   function iniciarUI() {
@@ -142,10 +142,19 @@ const Juego = (() => {
   }
 
   function ajustar() {
-    if (!lienzo || !lienzo.width) return;
-    // Con pantalla táctil no se muestra la ayuda de teclado, así que hay algo más de alto
-    const reservado = document.body.classList.contains('tactil') ? 72 : 110;
-    const maxW = window.innerWidth - 24, maxH = window.innerHeight - reservado;
+    if (!lienzo || !W) return;
+    medida = window.innerWidth + 'x' + window.innerHeight;
+    // En tablet y móvil el marcador va encima del juego, así que se usa toda la pantalla
+    const tactil = document.body.classList.contains('tactil');
+    const maxW = window.innerWidth - (tactil ? 8 : 24), maxH = window.innerHeight - (tactil ? 8 : 110);
+    // En pantallas apaisadas se ve más mundo a lo ancho (sin pasarse del mundo ni de 24 bloques)
+    const ancho = Math.min(W, Math.max(N, Math.min(24, Math.round(VH * maxW / maxH))));
+    if (ancho !== VW || lienzo.height !== VH * T) {
+      VW = ancho;
+      lienzo.width = VW * T;
+      lienzo.height = VH * T;
+      camX = Math.max(0, Math.min(W - VW, camX));
+    }
     const s = Math.min(maxW / lienzo.width, maxH / lienzo.height);
     lienzo.style.width = Math.floor(lienzo.width * s) + 'px';
     lienzo.style.height = Math.floor(lienzo.height * s) + 'px';
@@ -196,10 +205,8 @@ const Juego = (() => {
     jugador = { x: salida.x, y: salida.y, w: 0.7, h: 0.9, vx: 0, vy: 0, suelo: false, mira: 1, invul: 1, poder: 0, coyote: 0, paso: 0 };
     seguro = { x: jugador.x, y: jugador.y };
 
-    VW = Math.min(W, 20);
+    VW = 0;              // ajustar() elige el ancho de la vista según la pantalla
     VH = Math.min(H, N);
-    lienzo.width = VW * T;
-    lienzo.height = VH * T;
     ajustar();
     camX = Math.max(0, Math.min(W - VW, jugador.x - VW / 2));
     camY = Math.max(0, Math.min(H - VH, jugador.y - VH / 2));
@@ -533,6 +540,8 @@ const Juego = (() => {
   function bucle(ahora) {
     if (!activo) return;
     raf = requestAnimationFrame(bucle);
+    // Al girar la tablet o el móvil el evento resize no siempre llega a tiempo
+    if (window.innerWidth + 'x' + window.innerHeight !== medida) ajustar();
     const dt = Math.min(0.1, (ahora - ultimo) / 1000 || 0);
     ultimo = ahora;
     if (!pausa) {

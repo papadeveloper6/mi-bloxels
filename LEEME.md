@@ -47,7 +47,7 @@ Se sale con `Alt+F4`.
 
 **Controles con teclado:** ← → para moverse · Espacio o ↑ para saltar · P para pausar · Esc para salir.
 
-**Controles en tablet o móvil:** botones ◀ ▶ abajo a la izquierda (se puede deslizar el dedo de uno a otro) y botón de salto ⬆ abajo a la derecha. Arriba están ⏸ pausa, 🔊 sonido y ✖ salir. Si la app pasa a segundo plano, el juego se pausa solo.
+**Controles en tablet o móvil:** botones ◀ ▶ abajo a la izquierda (se puede deslizar el dedo de uno a otro) y botón de salto ⬆ abajo a la derecha. Arriba están ⏸ pausa, 🔊 sonido y ✖ salir. Si la app pasa a segundo plano, el juego se pausa solo. En el móvil se juega mejor en horizontal: se ve más grande y se ve más parte del mundo. Para crear niveles y personajes en el móvil es más cómodo en vertical.
 
 ## Dónde se guarda
 

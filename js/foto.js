@@ -45,6 +45,8 @@ const Foto = (() => {
       esquinas[arrastrando] = posRaton(e);
       programar();
     });
+    // Al girar la tablet cambia el tamaño en pantalla: se redibujan los círculos
+    window.addEventListener('resize', () => { if (pixeles && App.pantalla() === 'foto') programar(); });
     const soltar = () => { arrastrando = -1; };
     lienzo.addEventListener('pointerup', soltar);
     lienzo.addEventListener('pointercancel', soltar);
@@ -248,7 +250,10 @@ const Foto = (() => {
 
   function dibujar(h) {
     ctx.drawImage(trabajo, 0, 0);
-    const grosor = Math.max(2, ancho / 500);
+    // Tamaños en píxeles de pantalla (la foto se ve reducida, sobre todo en el móvil)
+    const visto = lienzo.getBoundingClientRect().width;
+    const px = visto ? ancho / visto : 1;
+    const grosor = 2 * px;
     if (h) {
       ctx.strokeStyle = 'rgba(255,255,255,.75)';
       ctx.lineWidth = grosor;
@@ -261,7 +266,7 @@ const Foto = (() => {
       }
       ctx.stroke();
       // Puntito con el color detectado en cada casilla
-      const rad = Math.max(3, ancho / 300);
+      const rad = 3.5 * px;
       for (let r = 0; r < N; r++) {
         for (let c = 0; c < N; c++) {
           const [x, y] = proyectar(h, (c + 0.5) / N, (r + 0.5) / N);
@@ -276,7 +281,7 @@ const Foto = (() => {
       }
     }
     // Asas de las esquinas
-    const radio = Math.max(14, ancho / 40);
+    const radio = 18 * px;
     esquinas.forEach(([x, y], i) => {
       ctx.beginPath();
       ctx.arc(x, y, radio, 0, Math.PI * 2);

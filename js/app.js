@@ -144,9 +144,18 @@ const App = (() => {
         alert('No se ha podido restaurar: ' + err.message);
       }
     };
+    // El iPhone no deja poner una web a pantalla completa: ahí se oculta el botón
+    const raiz = document.documentElement;
+    const pedir = raiz.requestFullscreen || raiz.webkitRequestFullscreen;
+    const salirPC = document.exitFullscreen || document.webkitExitFullscreen;
+    if (!pedir || !(document.fullscreenEnabled || document.webkitFullscreenEnabled)) {
+      $('#btn-pantalla-completa').classList.add('oculto');
+    }
     $('#btn-pantalla-completa').onclick = () => {
-      if (document.fullscreenElement) document.exitFullscreen();
-      else document.documentElement.requestFullscreen().catch(() => {});
+      try {
+        if (document.fullscreenElement || document.webkitFullscreenElement) salirPC.call(document);
+        else Promise.resolve(pedir.call(raiz)).catch(() => {});
+      } catch (e) { /* no disponible */ }
     };
     mostrar('inicio');
   }

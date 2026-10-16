@@ -4,12 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Mi Bloxels</title>
-  <link rel="stylesheet" href="css/estilos.css?v=3">
+  <link rel="stylesheet" href="css/estilos.css?v=6">
 </head>
 <body>
   <header class="barra">
     <h1 class="logo">Mi <span class="l1">B</span><span class="l2">l</span><span class="l3">o</span><span class="l4">x</span><span class="l5">e</span><span class="l6">l</span><span class="l7">s</span></h1>
-    <button class="btn" id="btn-pantalla-completa" title="Pantalla completa">⛶ Pantalla completa</button>
+    <button class="btn" id="btn-pantalla-completa" title="Pantalla completa">⛶<span class="solo-ancho"> Pantalla completa</span></button>
   </header>
 
   <!-- INICIO -->
@@ -45,7 +45,7 @@
     <div class="foto-fuentes">
       <label class="btn grande verde">🖼️ Elegir foto<input type="file" id="foto-input" accept="image/*" hidden></label>
       <button class="btn grande" id="foto-camara">📷 Usar la cámara</button>
-      <span class="pista">…o arrastra o pega (Ctrl+V) una foto aquí</span>
+      <span class="pista"><span class="solo-raton">…o arrastra o pega (Ctrl+V) una foto aquí</span><span class="solo-tactil">Consejo: haz la foto desde arriba, con buena luz y sin reflejos</span></span>
     </div>
     <div id="foto-video-caja" class="oculto">
       <video id="foto-video" autoplay playsinline muted></video>
@@ -161,7 +161,7 @@
       <span id="hud-poder"></span>
       <button class="btn" id="juego-pausar" tabindex="-1" title="Pausa">⏸</button>
       <button class="btn" id="juego-sonido" tabindex="-1">🔊</button>
-      <button class="btn" id="juego-salir" tabindex="-1">✖ Salir</button>
+      <button class="btn" id="juego-salir" tabindex="-1" title="Salir">✖<span class="solo-ancho"> Salir</span></button>
     </div>
     <div class="juego-caja">
       <canvas id="juego-lienzo"></canvas>
@@ -176,6 +176,7 @@
         </div>
       </div>
     </div>
+    <div id="juego-girar">🔄 Gira el móvil para verlo más grande</div>
     <div class="controles-ayuda">← → moverse · Espacio / ↑ saltar · P pausa · Esc salir</div>
     <div class="controles-tactiles">
       <div id="tactil-cruceta" class="tactil-cruceta"><span>◀</span><span>▶</span></div>
@@ -192,13 +193,13 @@
     </div>
   </div>
 
-  <script src="js/datos.js?v=3"></script>
-  <script src="js/dialogo.js?v=3"></script>
-  <script src="js/foto.js?v=3"></script>
-  <script src="js/editor.js?v=3"></script>
-  <script src="js/personaje.js?v=3"></script>
-  <script src="js/mundo.js?v=3"></script>
-  <script src="js/juego.js?v=3"></script>
-  <script src="js/app.js?v=3"></script>
+  <script src="js/datos.js?v=6"></script>
+  <script src="js/dialogo.js?v=6"></script>
+  <script src="js/foto.js?v=6"></script>
+  <script src="js/editor.js?v=6"></script>
+  <script src="js/personaje.js?v=6"></script>
+  <script src="js/mundo.js?v=6"></script>
+  <script src="js/juego.js?v=6"></script>
+  <script src="js/app.js?v=6"></script>
 </body>
 </html>
