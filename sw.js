@@ -2,7 +2,7 @@
 
 // Service worker de Mi Bloxels: guarda la app en el aparato para usarla sin internet.
 // AL PUBLICAR CAMBIOS: sube VERSION aquí y el ?v= de index.html al mismo número.
-const VERSION = 7;
+const VERSION = 8;
 const CACHE = `mi-bloxel-v${VERSION}`;
 const ARCHIVOS = [
   './',

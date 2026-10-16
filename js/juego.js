@@ -144,9 +144,27 @@ const Juego = (() => {
   function ajustar() {
     if (!lienzo || !W) return;
     medida = window.innerWidth + 'x' + window.innerHeight;
-    // En tablet y móvil el marcador va encima del juego, así que se usa toda la pantalla
+    // En tablet y móvil el marcador va encima del juego, así que se usa toda la pantalla,
+    // pero dejando sitio a los botones táctiles para que nunca tapen al personaje:
+    // en horizontal, a los lados; en vertical, abajo (y lo mismo arriba para que quede centrado)
     const tactil = document.body.classList.contains('tactil');
-    const maxW = window.innerWidth - (tactil ? 8 : 24), maxH = window.innerHeight - (tactil ? 8 : 110);
+    let izq = 0, der = 0, vertical = 0;
+    if (tactil) {
+      const cruceta = $('#tactil-cruceta').getBoundingClientRect(), salto = $('#tactil-salto').getBoundingClientRect();
+      if (cruceta.width) {
+        if (window.innerWidth > window.innerHeight) {
+          izq = cruceta.right + 8;
+          der = window.innerWidth - salto.left + 8;
+        } else {
+          vertical = window.innerHeight - Math.min(cruceta.top, salto.top) + 8;
+        }
+      }
+    }
+    const caja = lienzo.parentElement;
+    caja.style.marginLeft = izq ? izq + 'px' : '';
+    caja.style.marginRight = der ? der + 'px' : '';
+    const maxW = window.innerWidth - (tactil ? 8 : 24) - izq - der;
+    const maxH = window.innerHeight - (tactil ? 8 : 110) - 2 * vertical;
     // En pantallas apaisadas se ve más mundo a lo ancho (sin pasarse del mundo ni de 24 bloques)
     const ancho = Math.min(W, Math.max(N, Math.min(24, Math.round(VH * maxW / maxH))));
     if (ancho !== VW || lienzo.height !== VH * T) {
@@ -558,6 +576,9 @@ const Juego = (() => {
 
   // ---------- Dibujo ----------
   function dibujar() {
+    // Empezar siempre desde un estado limpio: si un frame fallara, no arrastra el desplazamiento al siguiente
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.globalAlpha = 1;
     const w = lienzo.width, h = lienzo.height;
     const cielo = ctx.createLinearGradient(0, 0, 0, h);
     cielo.addColorStop(0, '#1e3270');
@@ -645,6 +666,20 @@ const Juego = (() => {
     ctx.restore();
   }
 
+  // Rectángulo con esquinas redondeadas. No se usa ctx.roundRect porque no existe
+  // en iPad/iPhone con versiones anteriores a iPadOS/iOS 16.
+  function rectRedondo(x, y, w, h, radios) {
+    const max = Math.min(w, h) / 2;
+    const [a, b, c, d] = (Array.isArray(radios) ? radios : [radios, radios, radios, radios]).map(r => Math.min(r, max));
+    ctx.beginPath();
+    ctx.moveTo(x + a, y);
+    ctx.arcTo(x + w, y, x + w, y + h, b);
+    ctx.arcTo(x + w, y + h, x, y + h, c);
+    ctx.arcTo(x, y + h, x, y, d);
+    ctx.arcTo(x, y, x + w, y, a);
+    ctx.closePath();
+  }
+
   function bloque(px, py, [base, claro, oscuro]) {
     ctx.fillStyle = oscuro;
     ctx.fillRect(px, py, T, T);
@@ -722,8 +757,7 @@ const Juego = (() => {
     ctx.fillRect(px + 4, py + h - 8 + pie, 10, 8);
     ctx.fillRect(px + w - 14, py + h - 8 - pie, 10, 8);
     ctx.fillStyle = '#8e44ad';
-    ctx.beginPath();
-    ctx.roundRect(px, py, w, h - 5, [w / 2, w / 2, 6, 6]);
+    rectRedondo(px, py, w, h - 5, [w / 2, w / 2, 6, 6]);
     ctx.fill();
     ctx.fillStyle = '#b06fd0';
     ctx.fillRect(px + 8, py + 8, 6, 6);
@@ -758,8 +792,7 @@ const Juego = (() => {
     ctx.fillRect(px + w - 15, py + h - 9 - pierna, 10, 9 + pierna);
     // Cuerpo
     ctx.fillStyle = cuerpo;
-    ctx.beginPath();
-    ctx.roundRect(px + 3, py + h * 0.48, w - 6, h * 0.36, 5);
+    rectRedondo(px + 3, py + h * 0.48, w - 6, h * 0.36, 5);
     ctx.fill();
     // Cabeza
     ctx.fillStyle = '#ffcc99';
