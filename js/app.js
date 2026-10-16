@@ -9,7 +9,40 @@ const App = (() => {
     pantalla = nombre;
     document.body.dataset.pantalla = nombre;
     if (nombre === 'inicio') pintarInicio();
+    quitarZoom();
     window.scrollTo(0, 0);
+  }
+
+  // ---------- Zoom en iPad / iPhone ----------
+  // Safari hace zoom con doble toque o pellizco aunque la CSS (touch-action) pida evitarlo,
+  // y en la app instalada no hay forma fácil de deshacerlo. Se bloquea aquí con JavaScript.
+  function bloquearZoom() {
+    let ultimoToque = 0;
+    document.addEventListener('touchend', e => {
+      if (e.target.closest && e.target.closest('input, textarea, select')) return;
+      const ahora = Date.now();
+      // El segundo toque de un doble toque rápido no hace zoom (saltar va con el toque al pulsar, no afecta)
+      if (ahora - ultimoToque < 400) e.preventDefault();
+      ultimoToque = ahora;
+    }, { passive: false });
+    // Pellizco con dos dedos (fácil sin querer al pulsar ▶ y saltar a la vez)
+    document.addEventListener('touchmove', e => {
+      if (e.touches.length > 1 || (e.scale && e.scale !== 1)) e.preventDefault();
+    }, { passive: false });
+    ['gesturestart', 'gesturechange', 'gestureend'].forEach(t => document.addEventListener(t, e => e.preventDefault(), { passive: false }));
+    // Si aun así se amplía, se deshace solo
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', () => { if (window.visualViewport.scale > 1.01) quitarZoom(); });
+    }
+  }
+
+  // Volver a escribir la etiqueta viewport hace que Safari vuelva al tamaño normal
+  function quitarZoom() {
+    if (!window.visualViewport || window.visualViewport.scale <= 1.01) return;
+    const meta = document.querySelector('meta[name="viewport"]');
+    const original = meta.getAttribute('content');
+    meta.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1');
+    setTimeout(() => meta.setAttribute('content', original), 50);
   }
 
   function boton(texto, clase, accion) {
@@ -162,6 +195,7 @@ const App = (() => {
   }
 
   function arrancar() {
+    bloquearZoom();
     Almacen.cargar();
     Foto.iniciar();
     Editor.iniciar();
