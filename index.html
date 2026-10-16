@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Mi Bloxels</title>
-  <link rel="stylesheet" href="css/estilos.css">
+  <link rel="stylesheet" href="css/estilos.css?v=3">
 </head>
 <body>
   <header class="barra">
@@ -80,7 +80,7 @@
       <div id="editor-rejilla" class="rejilla"></div>
       <div class="editor-lateral">
         <div id="editor-paleta" class="paleta"></div>
-        <p class="pista">Clic para pintar · clic derecho para borrar</p>
+        <p class="pista"><span class="solo-raton">Clic para pintar · clic derecho para borrar</span><span class="solo-tactil">Toca o arrastra el dedo para pintar · elige «Borrar» para quitar bloques</span></p>
         <button class="btn" id="editor-texto">💬 Escribir en bloques blancos</button>
         <div class="botones">
           <button class="btn grande verde" id="editor-guardar">💾 Guardar</button>
@@ -107,7 +107,7 @@
       </div>
       <div class="editor-lateral">
         <div id="pj-paleta" class="paleta"></div>
-        <p class="pista">Clic para pintar · clic derecho para borrar. Aquí los colores son solo colores.</p>
+        <p class="pista"><span class="solo-raton">Clic para pintar · clic derecho para borrar.</span><span class="solo-tactil">Toca o arrastra el dedo para pintar · elige «Borrar» para quitar.</span> Aquí los colores son solo colores.</p>
         <div class="botones">
           <button class="btn verde" id="pj-foto">📸 Desde foto</button>
           <button class="btn" id="pj-copiar">📋 Copiar el «Quieto»</button>
@@ -183,12 +183,22 @@
     </div>
   </section>
 
-  <script src="js/datos.js"></script>
-  <script src="js/foto.js"></script>
-  <script src="js/editor.js"></script>
-  <script src="js/personaje.js"></script>
-  <script src="js/mundo.js"></script>
-  <script src="js/juego.js"></script>
-  <script src="js/app.js"></script>
+  <!-- Ventana de preguntas propia (sustituye a confirm/prompt del navegador) -->
+  <div id="dialogo" class="dialogo-fondo oculto" role="dialog" aria-modal="true" aria-labelledby="dialogo-texto">
+    <div class="dialogo">
+      <p id="dialogo-texto"></p>
+      <input id="dialogo-entrada" class="input-nombre oculto" type="text" maxlength="120" enterkeyhint="done">
+      <div id="dialogo-botones" class="botones"></div>
+    </div>
+  </div>
+
+  <script src="js/datos.js?v=3"></script>
+  <script src="js/dialogo.js?v=3"></script>
+  <script src="js/foto.js?v=3"></script>
+  <script src="js/editor.js?v=3"></script>
+  <script src="js/personaje.js?v=3"></script>
+  <script src="js/mundo.js?v=3"></script>
+  <script src="js/juego.js?v=3"></script>
+  <script src="js/app.js?v=3"></script>
 </body>
 </html>

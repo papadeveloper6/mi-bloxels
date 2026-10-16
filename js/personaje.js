@@ -8,7 +8,7 @@ const Personaje = (() => {
     ['saltar', '🦘 Saltando', '¿Cómo se ve cuando salta? (Si lo dejas vacío, usará el «Quieto».)'],
   ];
   const SECUENCIA = ['quieto', 'andar', 'quieto', 'andar', 'quieto', 'andar', 'saltar', 'saltar'];
-  let pj = null, actual = 'quieto', color = 'G', pintando = null, sucio = false, avisoTimer = 0, paso = 0;
+  let pj = null, actual = 'quieto', color = 'G', sucio = false, avisoTimer = 0, paso = 0;
   const celdas = [], pestanas = {};
 
   function iniciar() {
@@ -47,21 +47,10 @@ const Personaje = (() => {
         celdas.push(d);
       }
     }
-    rej.addEventListener('pointerdown', e => {
-      const d = e.target.closest('.celda');
-      if (!d) return;
-      e.preventDefault();
-      pintando = e.button === 2 ? '.' : color;
-      pintar(d, pintando);
+    rejillaPintable(rej, {
+      empezar: (r, c, e) => (e.button === 2 ? '.' : color),
+      pintar,
     });
-    rej.addEventListener('pointerover', e => {
-      if (!pintando) return;
-      if (!e.buttons) { pintando = null; return; }
-      const d = e.target.closest('.celda');
-      if (d) pintar(d, pintando);
-    });
-    window.addEventListener('pointerup', () => { pintando = null; });
-    rej.addEventListener('contextmenu', e => e.preventDefault());
 
     $('#pj-foto').onclick = () => Foto.abrir(rejilla => {
       pj.fotogramas[actual] = rejilla;
@@ -75,8 +64,8 @@ const Personaje = (() => {
       sucio = true;
       pintarTodo();
     };
-    $('#pj-limpiar').onclick = () => {
-      if (!confirm('¿Borrar este dibujo?')) return;
+    $('#pj-limpiar').onclick = async () => {
+      if (!await Dialogo.confirmar('¿Borrar este dibujo?', { si: '🧹 Borrar', peligro: true })) return;
       pj.fotogramas[actual] = actual === 'quieto' ? rejillaVacia() : null;
       sucio = true;
       pintarTodo();
@@ -93,10 +82,7 @@ const Personaje = (() => {
       const nivel = Almacen.datos.niveles[0] || { id: 'demo', nombre: 'Demo', rejilla: NIVEL_DEMO, historias: {} };
       Juego.iniciar({ salas: [{ x: 0, y: 0, nivel }], inicio: { x: 0, y: 0 }, personaje: copiar(pj) }, () => App.mostrar('personaje'));
     };
-    $('#pj-volver').onclick = () => {
-      if (sucio && !confirm('Hay cambios sin guardar. ¿Salir sin guardar?')) return;
-      App.mostrar('inicio');
-    };
+    $('#pj-volver').onclick = () => Dialogo.salirConCambios(sucio, guardar, () => App.mostrar('inicio'));
     $('#pj-nombre').addEventListener('input', () => { sucio = true; });
 
     setInterval(animar, 220);
@@ -128,8 +114,7 @@ const Personaje = (() => {
     pintarTodo();
   }
 
-  function pintar(d, b) {
-    const r = +d.dataset.r, c = +d.dataset.c;
+  function pintar(r, c, b) {
     if (!pj.fotogramas[actual]) pj.fotogramas[actual] = rejillaVacia();
     const g = pj.fotogramas[actual];
     if (g[r][c] === b) return;

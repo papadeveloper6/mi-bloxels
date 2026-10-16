@@ -73,7 +73,7 @@ h2 { margin: 28px 0 12px; }
 
 /* Editor */
 .editor-columnas { display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start; }
-.rejilla { display: grid; grid-template-columns: repeat(13, 1fr); gap: 3px; padding: 10px; background: #0b0c14; border-radius: var(--radio); width: min(76vh, 92vw, 660px); aspect-ratio: 1; user-select: none; touch-action: none; }
+.rejilla { display: grid; grid-template-columns: repeat(13, 1fr); gap: 3px; padding: 10px; background: #0b0c14; border-radius: var(--radio); width: min(76vh, 92vw, 660px); aspect-ratio: 1; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; touch-action: none; }
 .celda { border-radius: 4px; background: #2a2c3d; cursor: pointer; position: relative; }
 .celda.lleno { box-shadow: inset 3px 3px 0 #fff6, inset -3px -3px 0 #0005; }
 .celda.texto::after { content: "💬"; position: absolute; inset: 0; display: grid; place-items: center; font-size: clamp(10px, 1.8vw, 20px); }
@@ -86,6 +86,18 @@ h2 { margin: 28px 0 12px; }
 .paleta-btn small { display: block; color: var(--suave); }
 .muestra { width: 36px; height: 36px; border-radius: 6px; flex: none; box-shadow: inset 3px 3px 0 #fff6, inset -3px -3px 0 #0005; }
 .editor-foto { width: 100%; border-radius: var(--radio); opacity: .9; }
+
+/* Pistas distintas para ratón y para dedo */
+.solo-tactil { display: none; }
+body.tactil .solo-tactil { display: inline; }
+body.tactil .solo-raton { display: none; }
+
+/* Ventana de preguntas */
+.dialogo-fondo { position: fixed; inset: 0; z-index: 50; background: #000b; display: grid; place-items: center; padding: 16px; }
+.dialogo { background: var(--panel); border: 3px solid var(--panel2); border-radius: 20px; padding: 22px; width: min(560px, 100%); display: flex; flex-direction: column; gap: 16px; box-shadow: 0 10px 0 #0008; }
+.dialogo p { margin: 0; font-size: 22px; font-weight: 700; text-align: center; }
+.dialogo .input-nombre { width: 100%; min-width: 0; font-size: 22px; }
+.dialogo .botones { justify-content: center; }
 
 /* Editor de personaje */
 .pj-izquierda { display: flex; flex-direction: column; gap: 10px; }

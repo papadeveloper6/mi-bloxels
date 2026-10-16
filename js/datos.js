@@ -193,6 +193,34 @@ function fotogramaSprite(sp, enSuelo, andando, fase) {
   return sp.fotos.quieto;
 }
 
+// Pintar una rejilla de .celda con ratón o con el dedo, arrastrando.
+// Con el dedo el navegador "captura" el toque, así que la celda se busca por coordenadas.
+// empezar(r, c, e) devuelve el bloque con el que pintar (o null para no pintar).
+function rejillaPintable(contenedor, { empezar, pintar }) {
+  let activo = null;
+  const celdaEn = e => {
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    const d = el && el.closest('.celda');
+    return d && contenedor.contains(d) ? d : null;
+  };
+  contenedor.addEventListener('pointerdown', e => {
+    const d = e.target.closest('.celda');
+    if (!d) return;
+    e.preventDefault();
+    activo = empezar(+d.dataset.r, +d.dataset.c, e);
+    if (activo == null) return;
+    try { contenedor.setPointerCapture(e.pointerId); } catch (err) { /* puntero simulado */ }
+    pintar(+d.dataset.r, +d.dataset.c, activo);
+  });
+  contenedor.addEventListener('pointermove', e => {
+    if (activo == null) return;
+    const d = celdaEn(e);
+    if (d) pintar(+d.dataset.r, +d.dataset.c, activo);
+  });
+  ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(t => contenedor.addEventListener(t, () => { activo = null; }));
+  contenedor.addEventListener('contextmenu', e => e.preventDefault());
+}
+
 // Dibuja una rejilla 13x13 dentro de un canvas, en la posición y tamaño de celda indicados
 function pintarRejilla(ctx, rejilla, ox, oy, t) {
   for (let r = 0; r < N; r++) {

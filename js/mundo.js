@@ -29,10 +29,7 @@ const Mundo = (() => {
       leerNombre();
       Juego.iniciar(copiar(juego), () => App.mostrar('mundo'));
     };
-    $('#mundo-volver').onclick = () => {
-      if (sucio && !confirm('Hay cambios sin guardar. ¿Salir sin guardar?')) return;
-      App.mostrar('inicio');
-    };
+    $('#mundo-volver').onclick = () => Dialogo.salirConCambios(sucio, guardar, () => App.mostrar('inicio'));
     $('#mundo-nombre').addEventListener('input', () => { sucio = true; });
     $('#mundo-personaje').addEventListener('change', e => {
       juego.personajeId = e.target.value || null;
@@ -139,10 +136,10 @@ const Mundo = (() => {
 
   function guardar() {
     leerNombre();
-    if (Almacen.guardarJuego(copiar(juego))) {
-      sucio = false;
-      aviso('✅ ¡Guardado!');
-    }
+    if (!Almacen.guardarJuego(copiar(juego))) return false;
+    sucio = false;
+    aviso('✅ ¡Guardado!');
+    return true;
   }
 
   function aviso(texto) {

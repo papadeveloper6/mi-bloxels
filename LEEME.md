@@ -51,4 +51,10 @@ Se sale con `Alt+F4`.
 
 ## Dónde se guarda
 
-Niveles, personajes y juegos se guardan en el navegador de este ordenador. Si borras los datos de navegación o cambias de navegador, se pierde. De vez en cuando usa **Copias de seguridad → 💾 Guardar copia**.
+Niveles, personajes y juegos se guardan en el navegador de cada aparato (el ordenador, el iPad y el móvil tienen cada uno los suyos). Si borras los datos de navegación o cambias de navegador, se pierden. De vez en cuando usa **Copias de seguridad → 💾 Guardar copia**. Con **📂 Restaurar copia** puedes pasarlos de un aparato a otro.
+
+Al salir de un editor con cambios sin guardar, la app pregunta si quieres **💾 Guardar y salir**, **Salir sin guardar** o **Seguir editando**.
+
+## Si no ves los últimos cambios
+
+Cuando se publica una versión nueva, el navegador puede tardar unos minutos en notarlo. Recarga la página (en el iPad, desliza hacia abajo o pulsa ↻ en la barra de direcciones).

@@ -2,7 +2,7 @@
 
 // Editor de un nivel 13x13: pintar bloques y escribir textos de historia
 const Editor = (() => {
-  let nivel = null, bloque = 'G', modoTexto = false, pintando = null, sucio = false, avisoTimer = 0;
+  let nivel = null, bloque = 'G', modoTexto = false, sucio = false, avisoTimer = 0;
   const celdas = [];
 
   function iniciar() {
@@ -28,22 +28,15 @@ const Editor = (() => {
         celdas.push(d);
       }
     }
-    rej.addEventListener('pointerdown', e => {
-      const d = e.target.closest('.celda');
-      if (!d) return;
-      e.preventDefault();
-      if (modoTexto) { escribirTexto(+d.dataset.r, +d.dataset.c); return; }
-      pintando = e.button === 2 ? '.' : bloque;
-      poner(d, pintando);
+    // En modo texto no se pinta: se abre la ventana al soltar (evento click)
+    rejillaPintable(rej, {
+      empezar: (r, c, e) => (modoTexto ? null : e.button === 2 ? '.' : bloque),
+      pintar: poner,
     });
-    rej.addEventListener('pointerover', e => {
-      if (!pintando) return;
-      if (!e.buttons) { pintando = null; return; }
+    rej.addEventListener('click', e => {
       const d = e.target.closest('.celda');
-      if (d) poner(d, pintando);
+      if (modoTexto && d) escribirTexto(+d.dataset.r, +d.dataset.c);
     });
-    window.addEventListener('pointerup', () => { pintando = null; });
-    rej.addEventListener('contextmenu', e => e.preventDefault());
 
     $('#editor-texto').onclick = () => {
       modoTexto = !modoTexto;
@@ -52,17 +45,14 @@ const Editor = (() => {
     };
     $('#editor-guardar').onclick = guardar;
     $('#editor-probar').onclick = () => { leerNombre(); App.probarNivel(copiar(nivel), 'editor'); };
-    $('#editor-limpiar').onclick = () => {
-      if (!confirm('¿Borrar todos los bloques?')) return;
+    $('#editor-limpiar').onclick = async () => {
+      if (!await Dialogo.confirmar('¿Borrar todos los bloques?', { si: '🧹 Borrar todo', peligro: true })) return;
       nivel.rejilla = rejillaVacia();
       nivel.historias = {};
       sucio = true;
       pintarTodo();
     };
-    $('#editor-volver').onclick = () => {
-      if (sucio && !confirm('Hay cambios sin guardar. ¿Salir sin guardar?')) return;
-      App.mostrar('inicio');
-    };
+    $('#editor-volver').onclick = () => Dialogo.salirConCambios(sucio, guardar, () => App.mostrar('inicio'));
     $('#editor-nombre').addEventListener('input', () => { sucio = true; });
   }
 
@@ -87,8 +77,7 @@ const Editor = (() => {
     if (modoTexto) { modoTexto = false; $('#editor-texto').classList.remove('activo'); }
   }
 
-  function poner(d, b) {
-    const r = +d.dataset.r, c = +d.dataset.c;
+  function poner(r, c, b) {
     if (nivel.rejilla[r][c] === b) return;
     nivel.rejilla[r][c] = b;
     if (b !== 'W') delete nivel.historias[`${r},${c}`];
@@ -96,10 +85,11 @@ const Editor = (() => {
     pintarCelda(r, c);
   }
 
-  function escribirTexto(r, c) {
+  async function escribirTexto(r, c) {
     const clave = `${r},${c}`;
     if (nivel.rejilla[r][c] !== 'W') { nivel.rejilla[r][c] = 'W'; sucio = true; }
-    const t = prompt('¿Qué dice este bloque de historia? 💬', nivel.historias[clave] || '');
+    pintarCelda(r, c);
+    const t = await Dialogo.pedirTexto('¿Qué dice este bloque de historia? 💬', nivel.historias[clave] || '');
     if (t !== null) {
       if (t.trim()) nivel.historias[clave] = t.trim(); else delete nivel.historias[clave];
       sucio = true;
@@ -127,10 +117,10 @@ const Editor = (() => {
 
   function guardar() {
     leerNombre();
-    if (Almacen.guardarNivel(copiar(nivel))) {
-      sucio = false;
-      aviso('✅ ¡Guardado!');
-    }
+    if (!Almacen.guardarNivel(copiar(nivel))) return false;
+    sucio = false;
+    aviso('✅ ¡Guardado!');
+    return true;
   }
 
   function aviso(texto) {

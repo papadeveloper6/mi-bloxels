@@ -47,8 +47,8 @@ const App = (() => {
         esElegido ? Object.assign(document.createElement('span'), { className: 'etiqueta-elegido', textContent: '⭐ Elegido' })
           : boton('⭐ Elegir', 'morado', () => { Almacen.elegirPersonaje(p.id); pintarInicio(); }),
         boton('✏️', '', () => { Personaje.abrir(p, false); mostrar('personaje'); }),
-        boton('🗑️', 'rojo', () => {
-          if (confirm(`¿Borrar el personaje «${p.nombre}»?`)) { Almacen.borrarPersonaje(p.id); pintarInicio(); }
+        boton('🗑️', 'rojo', async () => {
+          if (await preguntarBorrar(`¿Borrar el personaje «${p.nombre}»?`)) { Almacen.borrarPersonaje(p.id); pintarInicio(); }
         }),
       ]);
       lp.appendChild(t);
@@ -59,20 +59,24 @@ const App = (() => {
     juegos.forEach(j => lj.appendChild(tarjeta(j.nombre, c => dibujarMiniaturaJuego(c, j), [
       boton('▶ Jugar', 'verde', () => Juego.iniciar(j, () => mostrar('inicio'))),
       boton('✏️', '', () => { Mundo.abrir(j); mostrar('mundo'); }),
-      boton('🗑️', 'rojo', () => {
-        if (confirm(`¿Borrar el juego «${j.nombre}»?`)) { Almacen.borrarJuego(j.id); pintarInicio(); }
+      boton('🗑️', 'rojo', async () => {
+        if (await preguntarBorrar(`¿Borrar el juego «${j.nombre}»?`)) { Almacen.borrarJuego(j.id); pintarInicio(); }
       }),
     ])));
 
     niveles.forEach(n => ln.appendChild(tarjeta(n.nombre, c => dibujarMiniatura(c, n.rejilla), [
       boton('▶ Probar', 'amarillo', () => probarNivel(n, 'inicio')),
       boton('✏️', '', () => { Editor.abrir(n, false); mostrar('editor'); }),
-      boton('🗑️', 'rojo', () => {
+      boton('🗑️', 'rojo', async () => {
         const usos = juegos.filter(j => j.salas.some(s => s.nivelId === n.id)).length;
         const extra = usos ? ` Se quitará de ${usos} juego(s).` : '';
-        if (confirm(`¿Borrar el nivel «${n.nombre}»?${extra}`)) { Almacen.borrarNivel(n.id); pintarInicio(); }
+        if (await preguntarBorrar(`¿Borrar el nivel «${n.nombre}»?${extra}`)) { Almacen.borrarNivel(n.id); pintarInicio(); }
       }),
     ])));
+  }
+
+  function preguntarBorrar(texto) {
+    return Dialogo.confirmar(texto, { si: '🗑️ Borrar', no: 'No, dejarlo', peligro: true });
   }
 
   function probarNivel(n, volverA) {
@@ -117,10 +121,11 @@ const App = (() => {
         nombre: 'Personaje ' + (Almacen.datos.personajes.length + 1),
         fotogramas: { quieto: rejillaVacia(), andar: null, saltar: null },
         creado: Date.now(),
-      }, true);
+      }, false);
       mostrar('personaje');
     };
-    $('#btn-nuevo-vacio').onclick = () => { Editor.abrir(nuevoNivel(), true); mostrar('editor'); };
+    // Un nivel vacío no tiene nada que perder: no cuenta como "cambios sin guardar" hasta que se pinta
+    $('#btn-nuevo-vacio').onclick = () => { Editor.abrir(nuevoNivel(), false); mostrar('editor'); };
     $('#btn-nuevo-juego').onclick = () => {
       if (!Almacen.datos.niveles.length) { alert('Primero crea algún nivel 🧱'); return; }
       Mundo.abrir({ id: nuevoId(), nombre: 'Juego ' + (Almacen.datos.juegos.length + 1), salas: [], inicio: null });
